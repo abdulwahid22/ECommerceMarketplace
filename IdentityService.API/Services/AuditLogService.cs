@@ -1,5 +1,6 @@
 ﻿using IdentityService.API.Data;
 using IdentityService.API.DTOs;
+using IdentityService.API.Helpers;
 using IdentityService.API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -103,18 +104,9 @@ namespace IdentityService.API.Services
                 .Take(query.PageSize)
                 .ToListAsync();
 
-            var items = auditLogs.Select(al => new AuditLogResponse
-            {
-                Id = al.Id,
-                PerformedByUserId = al.PerformedByUserId,
-                Action = al.Action,
-                EntityName = al.EntityName,
-                EntityId = al.EntityId,
-                OldValues = al.OldValues,
-                NewValues = al.NewValues,
-                Description = al.Description,
-                CreatedAt = al.CreatedAt
-            }).ToList();
+            var items = auditLogs
+    .Select(AuditLogMappingHelper.ToAuditLogResponse)
+    .ToList();
 
             var totalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize);
 
@@ -138,18 +130,7 @@ namespace IdentityService.API.Services
                 return null;
             }
 
-            return new AuditLogResponse
-            {
-                Id = auditLog.Id,
-                PerformedByUserId = auditLog.PerformedByUserId,
-                Action = auditLog.Action,
-                EntityName = auditLog.EntityName,
-                EntityId = auditLog.EntityId,
-                OldValues = auditLog.OldValues,
-                NewValues = auditLog.NewValues,
-                Description = auditLog.Description,
-                CreatedAt = auditLog.CreatedAt
-            };
+            return AuditLogMappingHelper.ToAuditLogResponse(auditLog);
         }
     }
 }
