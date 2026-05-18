@@ -1,4 +1,6 @@
-﻿namespace IdentityService.API.Services
+﻿using IdentityService.API.DTOs;
+
+namespace IdentityService.API.Services
 {
     public interface IAuditLogService
     {
@@ -11,5 +13,9 @@
             string? newValues = null,
             string? description = null
         );
+
+        Task<PagedResponse<AuditLogResponse>> GetAuditLogsAsync(AuditLogQueryParameters query);
+
+        Task<AuditLogResponse?> GetAuditLogByIdAsync(Guid id);
     }
 }

@@ -72,28 +72,9 @@ namespace IdentityService.API.Services
                 .Take(query.PageSize)
                 .ToListAsync();
 
-            var items = users.Select(user => new UserResponse
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                EmailConfirmed = user.EmailConfirmed,
-                PhoneNumber = user.PhoneNumber,
-                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                IsActive = user.IsActive,
-                IsDeleted = user.IsDeleted,
-                LastLoginAt = user.LastLoginAt,
-                CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt,
-                CreatedByUserId = user.CreatedByUserId,
-                UpdatedByUserId = user.UpdatedByUserId,
-                DeletedAt = user.DeletedAt,
-                DeletedByUserId = user.DeletedByUserId,
-                Roles = user.UserRoles
-                    .Select(ur => ur.Role.Name)
-                    .ToList()
-            }).ToList();
+            var items = users
+     .Select(UserMappingHelper.ToUserResponse)
+     .ToList();
 
             var totalPages = (int)Math.Ceiling(totalCount / (double)query.PageSize);
 
@@ -119,28 +100,7 @@ namespace IdentityService.API.Services
                 return null;
             }
 
-            return new UserResponse
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                EmailConfirmed = user.EmailConfirmed,
-                PhoneNumber = user.PhoneNumber,
-                PhoneNumberConfirmed = user.PhoneNumberConfirmed,
-                IsActive = user.IsActive,
-                IsDeleted = user.IsDeleted,
-                LastLoginAt = user.LastLoginAt,
-                CreatedAt = user.CreatedAt,
-                UpdatedAt = user.UpdatedAt,
-                CreatedByUserId = user.CreatedByUserId,
-                UpdatedByUserId = user.UpdatedByUserId,
-                DeletedAt = user.DeletedAt,
-                DeletedByUserId = user.DeletedByUserId,
-                Roles = user.UserRoles
-                    .Select(ur => ur.Role.Name)
-                    .ToList()
-            };
+            return UserMappingHelper.ToUserResponse(user);
         }
         public async Task<bool> ActivateUserAsync(Guid id, Guid performedByUserId)
         {
@@ -165,8 +125,8 @@ namespace IdentityService.API.Services
 
             await _auditLogService.LogAsync(
                 performedByUserId,
-                "UserActivated",
-                "User",
+                AuditActions.UserActivated,
+                EntityNames.User,
                 user.Id,
                 oldValues: "IsActive=false",
                 newValues: "IsActive=true",
@@ -209,8 +169,8 @@ namespace IdentityService.API.Services
 
             await _auditLogService.LogAsync(
     performedByUserId,
-    "UserDeactivated",
-    "User",
+    AuditActions.UserDeactivated,
+    EntityNames.User,
     user.Id,
     oldValues: "IsActive=true",
     newValues: "IsActive=false",
@@ -255,8 +215,8 @@ namespace IdentityService.API.Services
 
             await _auditLogService.LogAsync(
     performedByUserId,
-    "UserDeleted",
-    "User",
+    AuditActions.UserDeleted,
+    EntityNames.User,
     user.Id,
     oldValues: "IsDeleted=false, IsActive=true",
     newValues: "IsDeleted=true, IsActive=false",
@@ -355,8 +315,8 @@ namespace IdentityService.API.Services
 
             await _auditLogService.LogAsync(
                 performedByUserId,
-                "UserRoleChanged",
-                "User",
+                AuditActions.UserRoleChanged,
+                EntityNames.User,
                 user.Id,
                 oldValues: $"Roles={oldRolesText}",
                 newValues: $"Roles={role.Name}",

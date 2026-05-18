@@ -680,16 +680,7 @@ namespace IdentityService.API.Services
 
             await _context.SaveChangesAsync();
 
-            return new CurrentUserResponse
-            {
-                UserId = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                Email = user.Email,
-                Roles = user.UserRoles
-                    .Select(ur => ur.Role.Name)
-                    .ToList()
-            };
+            return CurrentUserMappingHelper.ToCurrentUserResponse(user);
         }
         private string GenerateRefreshToken()
         {
