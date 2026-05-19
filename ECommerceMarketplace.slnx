@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="IdentityService.API/IdentityService.API.csproj" />
+  <Project Path="ProductService.API/ProductService.API.csproj" Id="1a0aad84-e211-40d4-a8a7-c1566cd45806" />
 </Solution>
